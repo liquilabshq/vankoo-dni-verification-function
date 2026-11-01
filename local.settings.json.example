@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "",
+    "DNI_PROVIDER": "fake",
+    "ELDNI_BASE_URL": "https://eldni.com",
+    "ELDNI_TIMEOUT_SECONDS": "8",
+    "ELDNI_RETRIES": "1"
+  },
+  "Host": {
+    "CORS": "*"
+  }
+}

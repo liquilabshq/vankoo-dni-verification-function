@@ -1,0 +1,42 @@
+# Pruebas manuales con la extensión REST Client de VS Code.
+# Local: `func start` (o F5). En Azure cambiar @host y poner la clave en @key.
+@host = http://localhost:7071
+@key =
+
+### Salud
+GET {{host}}/api/health
+
+### Verificado (DNI de demostración, DNI_PROVIDER=fake)
+POST {{host}}/api/verify-dni
+Content-Type: application/json
+x-functions-key: {{key}}
+
+{ "investorId": "11111111-1111-1111-1111-111111111111", "dni": "12345678", "firstName": "Juan Carlos", "lastName": "Perez Gomez" }
+
+### Nombres que no coinciden -> NAME_MISMATCH
+POST {{host}}/api/verify-dni
+Content-Type: application/json
+x-functions-key: {{key}}
+
+{ "dni": "12345678", "firstName": "Pedro", "lastName": "Ramos" }
+
+### DNI inexistente -> NOT_FOUND
+POST {{host}}/api/verify-dni
+Content-Type: application/json
+x-functions-key: {{key}}
+
+{ "dni": "11111111", "firstName": "Juan", "lastName": "Perez" }
+
+### DNI inválido -> 400
+POST {{host}}/api/verify-dni
+Content-Type: application/json
+x-functions-key: {{key}}
+
+{ "dni": "1234567", "firstName": "Juan", "lastName": "Perez" }
+
+### Fuente caída (solo con DNI_PROVIDER=fake) -> 502
+POST {{host}}/api/verify-dni
+Content-Type: application/json
+x-functions-key: {{key}}
+
+{ "dni": "00000503", "firstName": "Juan", "lastName": "Perez" }

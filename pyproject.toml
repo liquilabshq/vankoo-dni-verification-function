@@ -1,0 +1,39 @@
+[project]
+name = "vankoo-dni-verification-function"
+version = "0.1.0"
+description = "Vankoo DNI verification: Azure Function that checks an investor's DNI against a public registry"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "azure-functions>=1.21",
+    "httpx>=0.28.1",
+    "beautifulsoup4>=4.12",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "pytest>=8.3",
+    "types-beautifulsoup4>=4.12",
+]
+
+# An application, not a library: install its dependencies, never the project itself.
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["live: hits the real eldni.com; excluded from CI (run with -m live)"]
+addopts = "-m 'not live'"

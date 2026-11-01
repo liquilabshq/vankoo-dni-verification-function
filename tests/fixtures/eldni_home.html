@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<!--- Basic Page Needs  -->
+
+<title>Buscar DNI por Nombres - Reniec Datos Perú</title>
+
+
+<!-- Mobile Specific Meta  -->
+
+<!-- CSS -->
+<!-- <link rel="stylesheet" href="https://eldni.com/css/jquery-ui.css"> -->
+<!-- Favicon -->
+
+
+
+<!-- <link rel="stylesheet" type="text/css" href="https://eldni.com/2020/css/adcss.css?v=29" > -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+
+
+
+
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+<body>
+<header class="bg-primary">
+<div class="navbar container">
+<div class="navbar-section">
+<a class="navbar-brand col-mx-auto" href="https://eldni.com" title="Inicio de buscador">
+<!-- <h1><b>eldni.com</b> 🇵🇪</h1> -->
+<h1></h1>
+</a>
+<!-- <a href="https://github.com/picturepan2/spectre" class="btn btn-link">Noticias</a> -->
+</div>
+<!--<nav class="nav-menu col-6 col-md-12">
+                <ul class="tab tab-block ">
+                    <li  class="tab-item" >
+                        <a href="https://eldni.com/pe/buscar-datos-por-dni">Buscar Datos por DNI</a>
+                    </li>
+                    <li  class="tab-item" >
+                        <a href="https://eldni.com/pe/buscar-por-nombres">Buscar DNI por Nombres</a>
+                    </li>
+                    <li  class="tab-item" >
+                        <a href="https://eldni.com/pe/obtener-digito-verificador-del-dni">Obtener dígito verificador</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="btn-noticias">
+                <a href="/" class="btn" target="_blank"><span>Consultas</span> <img alt="Flecha Derecha" src="https://eldni.com/2020/img/forward.svg"></a>
+            </div>-->
+</div>
+</header>
+<!-- <aside class="ad" id="ad_1">
+        <div class="div_ad">
+            <style>
+                .adheader { width: 320px; height: 50px; margin: 5px 0 5px 0;}
+                @media(min-width: 460px) { .adheader { width: 468px; height: 60px; } }
+                @media(min-width: 720px) { .adheader { width: 728px; height: 90px; } }
+            </style>
+            <ins class="adsbygoogle adheader"
+                 style="display:inline-block"
+                 data-ad-client="ca-pub-8995586921396350"
+                 data-ad-slot="4927582454"></ins>
+             <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </aside> -->
+<main>
+<div class="container container-padding clearfix">
+<section class="columns" id="dni-nombres">
+<div class="column column-np" id="column-left">
+<div class="column column-np col-12">
+<div class="card text-center">
+<div class="card-header"></div>
+<div class="card-body">
+<h3>Buscar nombres por DNI</h3>
+<div class="small">
+<small>Ingresa el DNI para saber los nombres</small>
+</div>
+</div>
+<form action="https://eldni.com/pe/buscar-datos-por-dni" autocomplete="on" enctype="multipart/form-data" id="buscar-datos-por-dni" method="post">
+<input name="_token" type="hidden" value="TOKEN-DE-PRUEBA"/>
+<div class="form-group input-clear" id="input-min">
+<input autofocus="" class="form-input" id="dni" maxlength="8" name="dni" placeholder="Número de DNI" type="tel"/>
+<i style="display:none;" title="Borrar">
+
+</i>
+</div>
+<div class="form-group">
+<button class="btn btn-success" form="buscar-datos-por-dni" id="btn-buscar-datos-por-dni" type="submit">Buscar datos</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<div class="column column-np" id="column-center">
+<div class="column col-md-12">
+<div class="text-center">
+<h2 class="text-center" id="title-center-h2">Encuentra los nombres y apellidos por su DNI.</h2>
+<p class="text-center">Escribe el DNI de un peruano en el campo "Número de DNI" y luego le click en "Buscar datos" para obtener los nombres y apellidos de esa persona, podrás copiarlo fácilmente.</p>
+</div>
+<table class="table table-striped table-scroll" style="border: 2px solid #ccc;">
+<thead>
+<tr>
+<th>DNI</th>
+<th>Nombres</th>
+<th>Apellido Paterno</th>
+<th>Apellido Materno</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<aside class="ad">
+<div class="div_ad">
+
+
+
+</div>
+</aside>
+<div class="column col-md-12" id="div-copy" style="padding-top: .7rem;">
+<div class="news-header">
+<h3>📋 Copiar datos:</h3>
+</div>
+<div class="form-group">
+<h6>👤 Nombres y apellidos</h6>
+<input id="completos" readonly="" type="text" value=""/>
+<button class="button_copy" id="button_completos">📋Copiar</button>
+</div>
+<hr/>
+<div class="form-group">
+<h6>Nombres</h6>
+<div>
+<input id="nombres" readonly="" type="text" value=""/>
+<button class="button_copy" id="button_nombres">📋Copiar</button>
+</div>
+</div>
+<div class="form-group">
+<h6>Apellido Paterno</h6>
+<input id="apellidop" readonly="" type="text" value=""/>
+<button class="button_copy" id="button_apellidop">📋Copiar</button>
+</div>
+<div class="form-group">
+<h6>Apellido Materno</h6>
+<input id="apellidom" readonly="" type="text" value=""/>
+<button class="button_copy" id="button_apellidom">📋Copiar</button>
+</div>
+<hr/>
+<div class="form-group">
+<h6>🔄 Apellidos y nombres</h6>
+<input id="completos2" readonly="" type="text" value=""/>
+<button class="button_copy" id="button_completos2">📋Copiar</button>
+</div>
+</div>
+<!-- adsense comment 2 -->
+</div>
+<div class="container-padding">
+<h4 class="d-inline">Historial de busqueda</h4>
+<span class="label label-primary">Pronto</span>
+</div>
+<table class="table table-striped table-scroll" style="border: 2px solid #ccc;">
+<thead>
+<tr>
+<th>DNI</th>
+<th>Nombres</th>
+<th>Apellido Paterno</th>
+<th>Apellido Materno</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<div class="container container-padding">
+<section class="columns">
+<div class="column col-4 col-md-12">
+<div class="card text-center">
+<div class="card-header"></div>
+<div class="card-body">
+<h4>Buscar nombres por RUC 10</h4>
+<div class="small">
+<small>Escribe un RUC 10 para mostrar sus nombres</small>
+</div>
+</div>
+<form action="https://eldni.com/pe/buscar-nombres-por-ruc-10" autocomplete="on" enctype="multipart/form-data" id="buscar-por-ruc10" method="post">
+<input name="_token" type="hidden" value="TOKEN-DE-PRUEBA"/>
+<div class="form-group" id="input-min">
+<input class="form-input" id="ruc10" name="ruc10" placeholder="RUC 10" type="text"/>
+</div>
+<div class="form-group">
+<button class="btn btn-success" form="buscar-por-ruc10" id="btn-buscar-por-ruc10" type="submit">Buscar nombres</button>
+</div>
+</form>
+</div>
+</div>
+<div class="column col-4 col-md-12">
+<div class="card text-center">
+<div class="card-header"></div>
+<div class="card-body">
+<h4>Obtener el RUC 10 por DNI</h4>
+<div class="small">
+<small>Escribe el DNI para consultar su RUC 10</small>
+</div>
+</div>
+<form action="https://eldni.com/pe/consultar-ruc-10-por-dni" autocomplete="on" enctype="multipart/form-data" id="buscar-por-dniruc10" method="post">
+<input name="_token" type="hidden" value="TOKEN-DE-PRUEBA"/>
+<div class="form-group" id="input-min">
+<input class="form-input" id="dniruc10" name="dniruc10" placeholder="DNI" type="text"/>
+</div>
+<div class="form-group">
+<button class="btn btn-success" form="buscar-por-dniruc10" id="btn-buscar-por-dniruc10" type="submit">Buscar RUC 10</button>
+</div>
+</form>
+</div>
+</div>
+<div class="column col-4 col-md-12">
+<div class="card text-center">
+<div class="card-header"></div>
+<div class="card-body">
+<h4>Obtener dígito verificador</h4>
+<div class="small">
+<small>Escribe el DNI para encontrar el dígito verificador</small>
+</div>
+</div>
+<form action="https://eldni.com/pe/obtener-digito-verificador-del-dni" autocomplete="on" enctype="multipart/form-data" id="buscar-por-dniveri" method="post">
+<input name="_token" type="hidden" value="TOKEN-DE-PRUEBA"/>
+<div class="form-group" id="input-min">
+<input class="form-input" id="dniveri" name="dniveri" placeholder="DNI" type="text"/>
+</div>
+<div class="form-group">
+<button class="btn btn-success" form="buscar-por-dniveri" id="btn-buscar-por-dniveri" type="submit">Buscar dígito verificador</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+</div>
+<div class="container container-padding">
+<section class="columns">
+<div class="column col-4 col-md-12">
+<div class="card text-center">
+<div class="card-header"></div>
+<div class="card-body">
+<h4>¿Cuántos se llaman como yo?</h4>
+<div class="small">
+<small>Solo escribe tu "nombre" (no apellidos)</small>
+</div>
+</div>
+<form action="https://eldni.com/pe/cuantos-se-llaman-como-yo" autocomplete="on" enctype="multipart/form-data" id="cuantos-se-llaman-como-yo" method="post">
+<input name="_token" type="hidden" value="TOKEN-DE-PRUEBA"/>
+<div class="form-group" id="input-min">
+<input class="form-input" id="nombres" name="nombres" placeholder="Nombres (no apellidos)" type="text"/>
+</div>
+<div class="form-group">
+<button class="btn btn-success" form="cuantos-se-llaman-como-yo" id="btn-cuantos-se-llaman-como-yo" type="submit">Buscar cantidad</button>
+</div>
+</form>
+</div>
+</div>
+<div class="column col-4 col-md-12">
+</div>
+<div class="column col-4 col-md-12">
+</div>
+</section>
+</div>
+<aside class="container container-padding">
+<h3>❓ Preguntas frecuentes</h3>
+<h4>¿Es gratis hacer consultas?</h4>
+<p>Sí, las consultas son gratis, no requieren métodos de verificación como CAPTCHA o entre otros. Es libre de hacer las consultas que desee. Puede userlo desde cualquier dispositivo que tenga una navegador web como:</p>
+<ul>
+<li>Computadoras o laptops</li>
+<li>Celulares (Android, iPhone, etc)</li>
+<li>Tables y/o Ipads</li>
+</ul>
+<h4>¿La información es correcta y oficial de RENIEC?</h4>
+<p>No, aunque los datos previenen de fuentes públicas confiables o información de acceso libre por todos, este puede tener errores y/o algún dato diferente, como por ejemplo existen muchos casos de cambios de nombres o modificación de apellidos que quizá estos datos publicos no lo tienen.</p>
+<h4>¿Dónde puedo conseguir datos oficinales de RENIEC?</h4>
+<p>Anteriormente habia una herramientra pública para poder consultar los nombres y el código de verificación de un DNI peruano, actualmente esta herramienta ya no funciona y ahora tiene un costo para acceder a ellas por consultas, esta herramienta lo tienes que solicitar desde la web de RENIEC (Registro Nacional de Identificación y Estado Civil)</p>
+<h4>¿Cuál es el fin de esta información y/o la herramienta?</h4>
+<p>Es solo para fines informativos con fuentes abiertas de información, no recopilamos datos de busqueda ni direccionesd de IP de las consultas. La responsabilidad del uso de la herramientas es exclusivamente del usuario.</p>
+</aside>
+</main>
+<footer>
+<div class="container">
+<div class="columns col-gapless">
+<div class="column col-6 col-md-12"></div>
+<div class="column col-6 col-md-12">
+<dl>
+<dt><a class="text-warning" href="/pe/buscar-datos-por-dni">🔍 Buscar Datos por DNI</a></dt>
+<dt><a class="text-warning" href="/pe/buscar-nombres-por-ruc-10">📇 Buscar nombres y apellidos por RUC 10</a></dt>
+<dt><a class="text-warning" href="/pe/consultar-ruc-10-por-dni">📢 Obtener RUC 10 por DNI</a></dt>
+<dt><a class="text-warning" href="/pe/obtener-digito-verificador-del-dni">🔢 Obtener dígito de verificación del DNI</a></dt>
+<dt><a class="text-warning" href="/pe/cuantos-se-llaman-como-yo">👤 Cuántos se llaman como yo</a></dt>
+</dl>
+</div>
+</div>
+<div class="columns">
+<div class="column col-12 col-mx-auto text-center">
+                    Eldni.com © 2018-2025
+                </div>
+</div>
+</div>
+</footer>
+<!-- Disable al hacer click -->
+
+<!-- Habilitar los botones al retroceso -->
+
+<!-- adsenc -->
+
+
+</body>
+</html>
+

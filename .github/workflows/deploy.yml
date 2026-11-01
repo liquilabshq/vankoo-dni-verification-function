@@ -1,0 +1,60 @@
+name: Deploy to Azure Functions
+
+# Se despliega al hacer merge en main, o a mano desde la pestaña Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests before deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run mypy .
+      - run: uv run pytest
+
+  deploy:
+    name: Publish function app
+    needs: test
+    runs-on: ubuntu-latest
+    # Variables y secretos del repositorio (Settings > Secrets and variables > Actions):
+    #   vars.AZURE_FUNCTIONAPP_NAME                  nombre del Function App (salida `function_app_name` de Terraform)
+    #   secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE    `az functionapp deployment list-publishing-profiles --xml`
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # Oryx instala requirements.txt en Azure (build remoto): el zip solo lleva código.
+      - name: Deploy
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: .
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
+
+      - name: Smoke test (health)
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error "https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/health"; then
+              exit 0
+            fi
+            echo "Intento $attempt sin respuesta; reintentando en 15 s..."
+            sleep 15
+          done
+          exit 1
