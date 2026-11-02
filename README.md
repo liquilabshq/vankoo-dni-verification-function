@@ -3,7 +3,7 @@
 Función serverless (Azure Functions, Python 3.12) que verifica el DNI de un inversor: comprueba que el
 DNI existe y que los nombres declarados coinciden con los registrados. Lo llama `vankoo-profile-service`
 cuando el inversor completa su perfil. Es el entregable **3.5 Funciones serverless**; el documento de
-entrega está en `vankoo-infra/docs/3.5-funciones-serverless.md`.
+entrega está en `vankoo-infra/docs/funciones-serverless.md`.
 
 > **Fuente de datos.** Consulta [eldni.com](https://eldni.com/) reproduciendo su formulario público. No es el
 > servicio oficial de RENIEC (el propio sitio avisa de que sus datos pueden contener errores). Por eso la
@@ -93,8 +93,8 @@ uv run mypy .                 # strict
 ## Despliegue
 
 - **CI** (`.github/workflows/ci.yml`): ruff, mypy y pytest en cada push/PR a `main` y `develop`.
-- **CD** (`.github/workflows/deploy.yml`): al fusionar en `main` corre las pruebas, publica en el Function App con
-  `Azure/functions-action` (build remoto) y hace un `GET /api/health` de comprobación.
+- **CD** (`.github/workflows/deploy.yml`): al fusionar en `develop` corre las pruebas, entra en Azure con OIDC, publica en
+  el Function App con `Azure/functions-action` (plan Flex Consumption, build remoto) y hace un `GET /api/health`.
 - **Infraestructura**: capa `functions` de Terraform en `vankoo-infra/terraform/functions`.
 
 Configuración del repositorio en GitHub (Settings → Secrets and variables → Actions):
@@ -102,9 +102,15 @@ Configuración del repositorio en GitHub (Settings → Secrets and variables →
 | Nombre | Tipo | Valor |
 |---|---|---|
 | `AZURE_FUNCTIONAPP_NAME` | Variable | `terraform output -raw function_app_name` (capa `functions`) |
-| `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` | Secreto | `az functionapp deployment list-publishing-profiles -g liquilabs-vankoo -n <app> --xml` |
+| `AZURE_CLIENT_ID` | Secreto | `az identity show -g liquilabs-vankoo -n vankoo-github-ci --query clientId -o tsv` |
+| `AZURE_TENANT_ID` | Secreto | `az account show --query tenantId -o tsv` |
+| `AZURE_SUBSCRIPTION_ID` | Secreto | `az account show --query id -o tsv` (la suscripción que contiene `liquilabs-vankoo`) |
 
-Y un *environment* `production` en el repositorio (lo usa `deploy.yml`). La clave que profile envía en
+Y un *environment* `development` en el repositorio (lo usa `deploy.yml`). Además, quien administre la suscripción debe
+crear en la identidad `vankoo-github-ci` una credencial federada con el sujeto
+`repo:liquilabshq@<id-org>/vankoo-dni-verification-function@<id-repo>:environment:development` y darle el rol
+Contributor sobre el Function App (los ids: `gh api orgs/liquilabshq --jq .id` y
+`gh api repos/liquilabshq/vankoo-dni-verification-function --jq .id`). La clave que profile envía en
 `x-functions-key`: `az functionapp keys list -g liquilabs-vankoo -n <app> --query functionKeys.default -o tsv`.
 
 ## Estructura

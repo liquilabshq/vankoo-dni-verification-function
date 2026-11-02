@@ -1,9 +1,10 @@
 name: Deploy to Azure Functions
 
-# Se despliega al hacer merge en main, o a mano desde la pestaña Actions.
+# Se despliega al hacer merge en develop (como el resto de servicios), o a mano
+# desde la pestaña Actions.
 on:
   push:
-    branches: [main]
+    branches: [develop]
   workflow_dispatch:
 
 concurrency:
@@ -31,27 +32,44 @@ jobs:
     name: Publish function app
     needs: test
     runs-on: ubuntu-latest
-    # Variables y secretos del repositorio (Settings > Secrets and variables > Actions):
-    #   vars.AZURE_FUNCTIONAPP_NAME                  nombre del Function App (salida `function_app_name` de Terraform)
-    #   secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE    `az functionapp deployment list-publishing-profiles --xml`
-    environment: production
+    # Azure solo acepta el token OIDC de este job si la credencial federada de la
+    # identidad vankoo-github-ci tiene el sujeto
+    #   repo:liquilabshq@<id-org>/vankoo-dni-verification-function@<id-repo>:environment:development
+    # y la identidad tiene el rol Contributor sobre el Function App.
+    environment: development
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RESOURCE_GROUP: liquilabs-vankoo
+    # Secretos del repositorio: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID.
+    # Variable del repositorio: AZURE_FUNCTIONAPP_NAME (salida `function_app_name` de Terraform).
     steps:
       - uses: actions/checkout@v4
 
-      # Oryx instala requirements.txt en Azure (build remoto): el zip solo lleva código.
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # El Function App usa el plan Flex Consumption. El build remoto instala
+      # requirements.txt en Azure: el paquete solo lleva código.
       - name: Deploy
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
           package: .
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+          sku: flexconsumption
+          remote-build: true
 
+      # En Flex el hostname lleva un sufijo propio: se pregunta a Azure en vez de armarlo a mano.
       - name: Smoke test (health)
         run: |
+          host="$(az functionapp show -g "$RESOURCE_GROUP" -n "${{ vars.AZURE_FUNCTIONAPP_NAME }}" --query defaultHostName -o tsv)"
           for attempt in 1 2 3 4 5 6; do
-            if curl --fail --silent --show-error "https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/health"; then
+            if curl --fail --silent --show-error "https://$host/api/health"; then
               exit 0
             fi
             echo "Intento $attempt sin respuesta; reintentando en 15 s..."
