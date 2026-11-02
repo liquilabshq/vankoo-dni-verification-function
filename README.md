@@ -75,6 +75,8 @@ cp local.settings.json.example local.settings.json   # DNI_PROVIDER=fake para em
 2. La función queda en `http://localhost:7071/api/verify-dni`. En local no pide clave.
 3. Abre `requests.http` y pulsa *Send Request* sobre cada caso (verificado, no coincide, no existe, DNI inválido, fuente caída).
 4. Para probar contra eldni.com de verdad, pon `"DNI_PROVIDER": "eldni"` en `local.settings.json` y reinicia.
+   Funciona desde Perú; **desde Azure (Central US) eldni.com responde 404**, por lo que el Function App desplegado usa
+   `DNI_PROVIDER=fake` (ver `vankoo-infra/docs/funciones-serverless.md`, «Limitaciones conocidas»).
 
 Integración con profile-service: en su `.env` pon `DNI_VERIFICATION_ENABLED=true` y
 `DNI_VERIFICATION_URL=http://localhost:7071/api/verify-dni` (si profile corre en Docker:

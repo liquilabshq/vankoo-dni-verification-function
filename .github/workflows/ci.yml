@@ -25,9 +25,8 @@ jobs:
         with:
           enable-cache: true
 
-      # Cuando exista uv.lock (uv lock), pasar a `uv sync --frozen` como el resto de repos.
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --frozen
 
       - name: Lint (ruff)
         run: uv run ruff check .
