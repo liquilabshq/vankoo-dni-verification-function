@@ -67,7 +67,13 @@ jobs:
       # En Flex el hostname lleva un sufijo propio: se pregunta a Azure en vez de armarlo a mano.
       - name: Smoke test (health)
         run: |
-          host="$(az functionapp show -g "$RESOURCE_GROUP" -n "${{ vars.AZURE_FUNCTIONAPP_NAME }}" --query defaultHostName -o tsv)"
+          # `az functionapp show` devuelve vacío para las apps Flex: se consulta el recurso directamente.
+          host="$(az resource show -g "$RESOURCE_GROUP" -n "${{ vars.AZURE_FUNCTIONAPP_NAME }}" \
+            --resource-type Microsoft.Web/sites --query properties.defaultHostName -o tsv)"
+          if [ -z "$host" ]; then
+            echo "No se pudo obtener el hostname del Function App." >&2
+            exit 1
+          fi
           for attempt in 1 2 3 4 5 6; do
             if curl --fail --silent --show-error "https://$host/api/health"; then
               exit 0

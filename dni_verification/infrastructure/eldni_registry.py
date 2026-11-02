@@ -40,7 +40,9 @@ class EldniRegistry:
             except (httpx.HTTPError, RegistryUnavailableError) as error:
                 last_error = error
                 logger.warning("eldni.com lookup failed (dni=%s, attempt=%d): %s", dni.masked, attempt + 1, error)
-        raise RegistryUnavailableError("No se pudo consultar eldni.com.") from last_error
+        # The cause goes in the message: it carries no personal data (the DNI travels in the POST
+        # body, never in a URL) and it is what tells a block (403) from an outage or a layout change.
+        raise RegistryUnavailableError(f"No se pudo consultar eldni.com: {last_error}") from last_error
 
     def _lookup_once(self, dni: DniNumber) -> RegisteredName | None:
         # A new cookie jar per lookup: the session only has to live for this one form.

@@ -92,6 +92,7 @@ def test_unavailable_source_is_a_502() -> None:
 
     assert status == 502
     assert body["title"] == "Fuente no disponible"
+    assert body["reason"] == "Fuente simulada no disponible."
 
 
 def test_logs_never_contain_the_full_dni(caplog: pytest.LogCaptureFixture) -> None:

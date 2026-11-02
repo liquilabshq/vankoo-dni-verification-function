@@ -16,8 +16,11 @@ def _json(body: dict[str, Any], status_code: int) -> func.HttpResponse:
     return func.HttpResponse(json.dumps(body), status_code=status_code, mimetype="application/json")
 
 
-def _problem(status_code: int, title: str, detail: str) -> func.HttpResponse:
-    return _json({"title": title, "detail": detail, "status": status_code}, status_code)
+def _problem(status_code: int, title: str, detail: str, reason: str | None = None) -> func.HttpResponse:
+    body: dict[str, Any] = {"title": title, "detail": detail, "status": status_code}
+    if reason:
+        body["reason"] = reason
+    return _json(body, status_code)
 
 
 def _to_body(result: VerificationResult, investor_id: str | None) -> dict[str, Any]:
@@ -65,7 +68,12 @@ def verify_dni(req: func.HttpRequest, service: VerifyDniService) -> func.HttpRes
         result = service.verify(dni, ProvidedName(first_name, last_name))
     except RegistryUnavailableError as error:
         logger.error("DNI source unavailable (dni=%s): %s", dni.masked, error)
-        return _problem(502, "Fuente no disponible", "No se pudo consultar el registro de DNI. Reintentar luego.")
+        return _problem(
+            502,
+            "Fuente no disponible",
+            "No se pudo consultar el registro de DNI. Reintentar luego.",
+            reason=str(error),
+        )
 
     logger.info("DNI verified (dni=%s, status=%s)", dni.masked, result.status.value)
     return _json(_to_body(result, investor_id), 200)

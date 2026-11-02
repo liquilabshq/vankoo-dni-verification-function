@@ -87,6 +87,14 @@ def test_retries_before_giving_up() -> None:
     assert site.gets == 2  # each attempt starts a fresh session
 
 
+def test_the_cause_is_part_of_the_error_without_the_dni() -> None:
+    with pytest.raises(RegistryUnavailableError) as excinfo:
+        make_registry(FakeEldni(post_status=403)).lookup(DNI)
+
+    assert "403" in str(excinfo.value)
+    assert DNI.value not in str(excinfo.value)
+
+
 def test_network_errors_are_reported_as_unavailable() -> None:
     def broken(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectTimeout("timeout", request=request)
