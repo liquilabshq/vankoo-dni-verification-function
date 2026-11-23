@@ -44,6 +44,18 @@ viene vacía **y** la página muestra «No se encontraron datos…» (`.text-err
 `NOT_FOUND`: una tabla vacía a secas (la página de inicio también la tiene, y es lo que vuelve si el formulario se
 rechaza en silencio) cuenta como fuente no disponible, para no rechazar a un inversor válido por un fallo del sitio.
 
+## API Perú (tercer adaptador)
+
+`ApiPeruRegistry` consulta la API REST de [API Perú](https://apiperu.pe): `POST https://api.apiperu.pe/dni` con
+`{"dni": "..."}` y `Authorization: Bearer <token>` (contrato tomado de su especificación OpenAPI). Al ser una API y no un
+scraping no depende de la estructura de una página, y está pensada para llamarse desde servidores. Mantiene las reglas del
+resto de adaptadores: solo un `200` coherente (con el mismo DNI y los nombres presentes) o el `404` con el aviso exacto de
+«no existe» son veredictos; el resto, incluido el `401` de un token inválido (observado en la API real) y el `429` de una
+cuota agotada, es `RegistryUnavailableError` → `502`. El token se lee de `APIPERU_TOKEN`, no sale en `repr` ni en los
+mensajes de error, y la función no arranca si falta con `DNI_PROVIDER=apiperu`.
+
+## Scraping de eldni.com (riesgos)
+
 Riesgos conocidos: no es la fuente oficial de RENIEC, el HTML puede cambiar y el sitio puede limitar el tráfico. El
 parser exige la forma exacta de la tabla y que el DNI devuelto sea el consultado; si no, falla en lugar de adivinar.
 `pytest -m live` sirve de alarma temprana si el sitio cambia. Los fixtures de `tests/fixtures/` son respuestas reales

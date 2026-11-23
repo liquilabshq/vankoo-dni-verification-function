@@ -45,13 +45,26 @@ La función **no guarda nada** y **nunca registra el DNI completo** (`1234****`)
 
 | Variable | Default | Descripción |
 |---|---|---|
-| `DNI_PROVIDER` | `eldni` | `eldni` (web real) o `fake` (datos de demostración, sin internet) |
+| `DNI_PROVIDER` | `eldni` | `eldni` (scraping de la web), `apiperu` (API de terceros con token) o `fake` (datos de demostración, sin internet) |
 | `ELDNI_BASE_URL` | `https://eldni.com` | |
 | `ELDNI_TIMEOUT_SECONDS` | `8` | Tiempo máximo por petición |
 | `ELDNI_RETRIES` | `1` | Reintentos ante fallo (cada uno abre una sesión nueva) |
+| `APIPERU_TOKEN` | (vacío) | Token Bearer de API Perú. **Obligatorio con `DNI_PROVIDER=apiperu`** (si falta, la función no arranca). Es un secreto: nunca va en git |
+| `APIPERU_BASE_URL` | `https://api.apiperu.pe` | |
+| `APIPERU_TIMEOUT_SECONDS` | `8` | Tiempo máximo por petición |
+| `APIPERU_RETRIES` | `1` | Solo reintenta fallos de red; un 401 o un 429 no mejoran reintentando y gastarían cuota |
 
 Con `DNI_PROVIDER=fake`: `12345678` → JUAN CARLOS PEREZ GOMEZ, `87654321` → MARIA ELENA QUISPE HUAMAN,
 `00000503` → simula la fuente caída (502); cualquier otro → `NOT_FOUND`.
+
+Con `DNI_PROVIDER=apiperu` la función consulta [API Perú](https://apiperu.pe) (`POST /dni` con token Bearer).
+Solo se envía el DNI, nunca los nombres declarados, y de la respuesta solo se usan los nombres (la dirección y el ubigeo
+se ignoran). Un `200` coherente da el veredicto; el `404` con «No se encontró DNI» es `NOT_FOUND`; cualquier otra cosa
+(`401` por token inválido, `429` por cuota agotada, errores 5xx, formato raro) es un `502`, nunca un `NOT_FOUND`.
+El plan gratuito de API Perú incluye **100 consultas al mes**: para pruebas repetidas conviene `fake`. Su proveedor no
+declara públicamente el origen de los datos de DNI ni su identidad legal, por lo que aquí se considera una fuente para
+demostraciones, no para producción. Para probarla en local, pon `"DNI_PROVIDER": "apiperu"` y `"APIPERU_TOKEN"` en
+`local.settings.json` (que está en `.gitignore`).
 
 ## Probar en local con VS Code
 
@@ -122,7 +135,7 @@ function_app.py                      # triggers: solo cableado
 dni_verification/
   domain/          DniNumber, modelos, name_matcher
   application/     VerifyDniService + puerto DniRegistry
-  infrastructure/  eldni_registry (scraper), fake_registry, settings
+  infrastructure/  eldni_registry (scraper), apiperu_registry (API), fake_registry, settings
   interfaces/      http (handlers), composition (elige el proveedor)
 tests/             unit/ por capa + fixtures/ HTML
 ```
