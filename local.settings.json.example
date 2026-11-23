@@ -6,7 +6,8 @@
     "DNI_PROVIDER": "fake",
     "ELDNI_BASE_URL": "https://eldni.com",
     "ELDNI_TIMEOUT_SECONDS": "8",
-    "ELDNI_RETRIES": "1"
+    "ELDNI_RETRIES": "1",
+    "APIPERU_BASE_URL": "https://api.apiperu.pe"
   },
   "Host": {
     "CORS": "*"
